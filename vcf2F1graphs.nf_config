@@ -1,0 +1,24 @@
+/*
+ * Declare default parameters
+ * Those will be override by nextflow  arguments.
+ * For example: nextflow run file.nf --resultdir "/home/mypath"
+ */
+
+
+params.rootDir = "/home/qtestard"
+params.projectdir="/archivage/QTESTARD/test_vcf2F1graphs"
+params.refdir="${params.rootDir}/REF"
+// params.sampledir="${params.rootDir}"
+
+
+timeline.enabled = true
+trace.enabled = true
+
+params.maxJob = 3
+params.nCpu = 3
+params.nLane = 2
+params.javaMem = "-Xmx8g"
+
+
+
+params.genomeRef = "${params.refdir}/human_g1k_v37_decoy.fasta"
