@@ -18,7 +18,3 @@ params.maxJob = 3
 params.nCpu = 3
 params.nLane = 2
 params.javaMem = "-Xmx8g"
-
-
-
-params.genomeRef = "${params.refdir}/human_g1k_v37_decoy.fasta"

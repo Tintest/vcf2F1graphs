@@ -11,6 +11,11 @@ projectdir="/archivage/QTESTARD/$project"
 refdir="$projectdir/REF"
 vcfdir="$rootdir/CompareCapture_FromFASTQ_2017/03_fastq2gvcf"
 
+genomeref="$refdir/human_g1k_v37_decoy.fasta"
+
+export HGREF=$genomeref
+export HG19=$genomeref
+
 
 
 ############### List of the different discriminating parameters of the vcf files ###############
@@ -48,11 +53,11 @@ parentID[NIST004]='HG004'
 
 ############### Creating the results directory ###############
 
-# for size in $sampling_size;
-#         do for parent in $trio;
-#                 do mkdir -p $projectdir/$size/$parent;
-#         done
-# done
+for size in $sampling_size;
+        do for parent in $trio;
+                do mkdir -p $projectdir/$size/$parent/SAMPLE; mkdir -p $projectdir/$size/$parent/RES
+        done
+done
 
 ############### Pulling symboling links of the vcf files in some organised directories ###############
 
@@ -60,7 +65,7 @@ parentID[NIST004]='HG004'
 #         do for kit in $capture_kit;
 #                 do for length in $read_length;
 #                         do for parent in $trio;
-#                                 do ln -s $vcfdir/$size/${runID[$kit]}-$kit-$length/${runID[$kit]}-$parent-${kitID[$kit]}-$length/vcf/*.vcf.gz $projectdir/$size/$parent;
+#                                 do ln -s $vcfdir/$size/${runID[$kit]}-$kit-$length/${runID[$kit]}-$parent-${kitID[$kit]}-$length/vcf/*.vcf.gz $projectdir/$size/$parent/SAMPLE;
 #                         done
 #                 done
 #         done
@@ -81,7 +86,9 @@ parentID[NIST004]='HG004'
 ##
 ## cd $projectdir
 ##
-## I don't have the sudo right for the classic hap.py installation, anyway it's already on the cluster
+## I don't have the sudo rights for the classic hap.py installation, anyway it's already on the cluster
+
+# ln -s $rootdir/bin/hap.py $projectdir
 
 
 ############### do nextflow ###############
@@ -90,15 +97,26 @@ parentID[NIST004]='HG004'
 
 for size in $sampling_size;
         do for parent in $trio;
-                do bedref=`ls $refdir/*${parentID[$parent]}*.bed`;
-                vcfref=`ls $refdir/*${parentID[$parent]}*.vcf.gz`;
-                vcfsample="$projectdir/$size/$parent"
-                # echo $parent $bedref $vcfref;
-                # nextflow --sampling_size $size --trio $parent --vcfsample $sampledir --bedparent $bedref --vcfparent $vcfref
-                nextflow -c "vcf2F1graphs.nf_config" run "vcf2F1graphs.nf" --sampledir $vcfsample
+                do bedparent=`ls $refdir/*${parentID[$parent]}*.bed`;
+                vcfparent=`ls $refdir/*${parentID[$parent]}*.vcf.gz`;
+                vcfsample="$projectdir/$size/$parent/SAMPLE"
 
+                results="$projectdir/$size/$parent/RES"
+
+                # echo $bedparent $vcfpavcfsamplerent $ $results $genomeref
+                nextflow -c "vcf2F1graphs.nf_config" run "vcf2F1graphs.nf" --sampledir $vcfsample --resultdir $results --bedref $bedparent --vcfref $vcfparent --refgenome $genomeref
                 done
         done
 
 
 
+
+# for size in $sampling_size;
+#         do for kit in $capture_kit;
+#                 do for length in $read_length;
+#                         do for parent in $trio;
+#                                 do nextflow;
+#                         done
+#                 done
+#         done
+# done
